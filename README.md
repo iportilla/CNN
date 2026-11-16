@@ -46,16 +46,60 @@ Sized for one 2.5-hour session. Parts 1–2 and 3–4 also work as two 75-minute
 
 ## Setup
 
+You need [Git](https://git-scm.com/downloads) and [Python](https://www.python.org/downloads/) 3.10 or newer. Labs 1 and 2 need no keys or accounts. Labs 3–6 read credentials from `.env`; see each lab's README. Do not commit `.env`.
+
+### macOS and Linux
+
+In Terminal:
+
 ```bash
 git clone https://github.com/iportilla/CNN.git
 cd CNN
-python -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-cp .env.example .env    # then add your keys
+cp .env.example .env
 jupyter lab
 ```
 
-Labs 1 and 2 need no keys or accounts. Labs 3–6 read credentials from `.env`; see each lab's README. Do not commit `.env`.
+- Check your Python first with `python3 --version`. On macOS, install it from python.org or with `brew install python`. On Ubuntu/Debian, run `sudo apt install python3 python3-venv python3-pip`.
+- Edit `.env` with any text editor, for example `nano .env`. The file is hidden in Finder and in `ls`; use `ls -a` to see it.
+- Ollama for Lab 5: on macOS, download the app from [ollama.com/download](https://ollama.com/download). On Linux, run `curl -fsSL https://ollama.com/install.sh | sh`.
+
+### Windows
+
+In PowerShell:
+
+```powershell
+git clone https://github.com/iportilla/CNN.git
+cd CNN
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+Copy-Item .env.example .env
+jupyter lab
+```
+
+- When installing Python from python.org, tick **Add python.exe to PATH**. Check it with `py --version`.
+- If `Activate.ps1` is blocked with "running scripts is disabled on this system", run this once in the same window and try again:
+
+  ```powershell
+  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+  ```
+
+- In Command Prompt instead of PowerShell, activate with `.venv\Scripts\activate.bat` and copy with `copy .env.example .env`.
+- Edit `.env` with `notepad .env`. If you create the file by hand, make sure Notepad does not save it as `.env.txt`.
+- Ollama for Lab 5: run the Windows installer from [ollama.com/download](https://ollama.com/download), then open a new PowerShell window so `ollama` is on the PATH.
+- TensorFlow on Windows runs on the CPU only. That is enough for Lab 2 if you lower `EPOCHS`; for a GPU, use [WSL 2](https://learn.microsoft.com/windows/wsl/install) and follow the Linux steps, or use Colab.
+
+### All platforms
+
+- Your prompt shows `(.venv)` when the environment is active. Activate it again in every new terminal window before running `jupyter lab`.
+- If `pip install -r requirements.txt` cannot find a TensorFlow version, your Python is newer than TensorFlow supports. Create the environment with an older Python (`python3.12 -m venv .venv`, or `py -3.12 -m venv .venv` on Windows).
+- Paths inside the notebooks use forward slashes and work unchanged on every platform.
+- No local install? Labs 1 and 2 run as they are in [Google Colab](https://colab.research.google.com/): **File → Open notebook → GitHub**, then enter `iportilla/CNN`.
 
 ## Repository layout
 
