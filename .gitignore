@@ -3,3 +3,5 @@
 __pycache__/
 .ipynb_checkpoints/
 labs/06-image-generation/images/
+.venv/
+.virtual_documents/
