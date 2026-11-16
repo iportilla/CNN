@@ -1,0 +1,5 @@
+.env
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
+labs/06-image-generation/images/

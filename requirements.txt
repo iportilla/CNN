@@ -1,0 +1,16 @@
+# Labs 1-2: CNN fundamentals and Keras
+numpy
+matplotlib
+scikit-image
+opencv-python
+pillow
+tensorflow
+
+# Labs 3-6: Azure, vision LLMs, image generation
+requests
+python-dotenv
+azure-cognitiveservices-vision-computervision
+ollama
+openai
+
+jupyter
