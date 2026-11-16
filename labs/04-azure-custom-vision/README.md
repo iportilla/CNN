@@ -27,18 +27,88 @@ Five images per tag is the minimum the service accepts. It is enough to see tran
 
 ## Calling the published model
 
-After publishing, open **Prediction URL** in the Performance tab. Add to `.env` in the repo root:
+[`predict.py`](predict.py) uploads one local image to your published iteration and prints each tag with its probability.
+
+### 1. Get the four values
+
+In the Custom Vision portal, open your project → **Performance** tab → select the published iteration → **Prediction URL**. The dialog shows a URL and a key:
 
 ```
-CUSTOM_VISION_ENDPOINT=https://<your-resource>.cognitiveservices.azure.com/
-CUSTOM_VISION_PREDICTION_KEY=...
-CUSTOM_VISION_PROJECT_ID=...
+https://eastus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/1a2b3c4d-0000-0000-0000-000000000000/classify/iterations/Iteration1/image
+Prediction-Key: 0123456789abcdef0123456789abcdef
+```
+
+| `.env` variable | Where it comes from | In the example above |
+|---|---|---|
+| `CUSTOM_VISION_ENDPOINT` | The URL up to, but not including, `/customvision/...` | `https://eastus.api.cognitive.microsoft.com/` |
+| `CUSTOM_VISION_PROJECT_ID` | The ID after `/Prediction/`. It is also in the browser address bar after `/projects/` | `1a2b3c4d-0000-0000-0000-000000000000` |
+| `CUSTOM_VISION_ITERATION` | The name after `/iterations/`: the **published name** you chose when you clicked Publish | `Iteration1` |
+| `CUSTOM_VISION_PREDICTION_KEY` | The `Prediction-Key` value shown under the URL | `0123456789abcdef0123456789abcdef` |
+
+Notes:
+
+- The dialog shows two URLs, one ending in `/url` (image on the web) and one ending in `/image` (image file). They share the same endpoint, project ID and iteration; `predict.py` uses `/image`.
+- `CUSTOM_VISION_ITERATION` is the published **name**, not the `iterationId` in the browser address bar.
+- No **Prediction URL** button? The iteration is not published yet. Click **Publish** first.
+
+### 2. Put them in `.env`
+
+`.env` lives in the **repo root** (the `CNN` folder), next to the main `README.md`. If it does not exist yet, copy `.env.example` to `.env`. Fill in the four lines, with no quotes and no spaces around `=`:
+
+```
+CUSTOM_VISION_ENDPOINT=https://eastus.api.cognitive.microsoft.com/
+CUSTOM_VISION_PREDICTION_KEY=<your prediction key>
+CUSTOM_VISION_PROJECT_ID=<your project id>
 CUSTOM_VISION_ITERATION=Iteration1
 ```
 
+The key is a credential. `.env` is git-ignored; keep it that way, and do not paste the key into a notebook, a chat or a commit.
+
+### 3. Run it
+
+Activate the virtual environment first; your prompt shows `(.venv)`. The image path is relative to the folder you are in, so use one of these two forms.
+
+From the repo root (recommended):
+
 ```bash
+python labs/04-azure-custom-vision/predict.py images/Red_Apple.jpg
+```
+
+Or from this lab folder:
+
+```bash
+cd labs/04-azure-custom-vision
 python predict.py ../../images/Red_Apple.jpg
 ```
+
+The same commands work in PowerShell on Windows.
+
+The output is one line per tag in your project:
+
+```
+apple        99.2%
+banana       0.8%
+```
+
+The tags are whatever your project was trained on. Against a cat-vs-dog project, for example:
+
+```
+(.venv) CNN % python labs/04-azure-custom-vision/predict.py images/dog1.jpeg
+dog          100.0%
+cat          0.0%
+```
+
+### Troubleshooting
+
+| Message | Cause | Fix |
+|---|---|---|
+| `can't open file '.../predict.py'` | You are not in the repo root | `cd` into the `CNN` folder, or use the lab-folder form above |
+| `FileNotFoundError: ... '../../images/...'` | The image path does not match the folder you are in | From the repo root use `images/<file>`; from the lab folder use `../../images/<file>` |
+| `MissingSchema: Invalid URL '/customvision/v3.0/Prediction//classify/...'` | `CUSTOM_VISION_ENDPOINT` or `CUSTOM_VISION_PROJECT_ID` is empty in `.env` | Fill in all four values and save the file |
+| `KeyError: 'CUSTOM_VISION_...'` | The variable is missing, or `.env` is not in the repo root | Check the file is named exactly `.env` and where it is |
+| `401 Client Error` | Wrong key, or a training key instead of the prediction key | Copy `Prediction-Key` from the Prediction URL dialog again |
+| `404 Client Error` | Wrong project ID or iteration name, or the iteration is not published | Compare both with the Prediction URL; publish the iteration |
+| Every image gets the same tag | The image is not one of the project's classes | A multiclass model must pick one of its tags; see question 1 below |
 
 ## Questions
 
